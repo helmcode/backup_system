@@ -1,0 +1,29 @@
+---
+# Backup system configuration file
+#
+# Postgres configuration
+postgres:
+  enabled: false
+  actions:
+    backup: false
+    restore: false
+
+  # Fake data
+  backup:
+    dir: /var/lib/postgresql/backup
+    user: postgres
+    password: postgres
+    host: []
+    port: 5432
+    db: []
+    db_prefix: []
+    all_dbs: false
+    compression: false
+  restore:
+    dir: /var/lib/postgresql/backup
+    user: postgres
+    password: postgres
+    host: []
+    port: 5432
+    db: []
+    compression: false
