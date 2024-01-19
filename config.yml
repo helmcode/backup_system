@@ -3,9 +3,9 @@
 #
 # Postgres configuration
 postgres:
-  enabled: false
+  enabled: true
   actions:
-    backup: false
+    backup: true
     restore: false
 
   # Fake data
@@ -23,7 +23,9 @@ postgres:
     dir: /var/lib/postgresql/backup
     user: postgres
     password: postgres
-    host: []
+    host:
+      - localhost
+      - example.com
     port: 5432
     db: []
     compression: false
