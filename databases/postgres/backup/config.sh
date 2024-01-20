@@ -20,20 +20,28 @@ load_postgres_backup_config() {
             fi
 
             info_log "POSTGRES: backup job source host: $host"
+            load_datasources_config $config_path $host
             #
             # Required backup parameters
-            ######################
+            #############################
+            # Datasource parameters
+            postgres_datasource_host=$datasources_host
+            postgres_datasource_port=$datasources_port
+            postgres_datasource_user=$datasources_user
+            postgres_datasource_password=$datasources_password
+
+            # Jobs parameters
             postgres_backup_name=$job_name
 
-            postgres_backup_source_host=$(read_yml ".jobs[] | select(.name == \"$job_name\").source[] | select(.host == \"$host\").host" "$config_path")
             postgres_backup_source_dbs=$(read_yml ".jobs[] | select(.name == \"$job_name\").source[] | select(.host == \"$host\").dbs[]" "$config_path")
             postgres_backup_source_exclude_dbs=$(read_yml ".jobs[] | select(.name == \"$job_name\").source[] | select(.host == \"$host\").exclude_dbs[]" "$config_path")
 
             postgres_backup_destination_dir=$(read_yml ".jobs[] | select(.name == \"$job_name\").destination.dir" "$config_path")
             postgres_backup_destination_s3_uri=$(read_yml ".jobs[] | select(.name == \"$job_name\").destination.s3_uri" "$config_path")
+
             #
             # Optional backup parameters
-            ######################
+            #############################
             postgres_backup_enabled=$(read_yml ".jobs[] | select(.name == \"$job_name\").enabled" "$config_path")
             postgres_backup_compression=$(read_yml ".jobs[] | select(.name == \"$job_name\").compression" "$config_path")
 

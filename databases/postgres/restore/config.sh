@@ -11,18 +11,26 @@ load_postgres_restore_config() {
         fi
 
         info_log "POSTGRES: restore job: $job_name"
-        read_yml ".jobs[] | select(.name == \"$job_name\").source[].host" "$config_path" | while read -r host
+        read_yml ".jobs[] | select(.name == \"$job_name\").destination[].host" "$config_path" | while read -r host
         do
             if [[ -z $host ]]
             then
-                error_log "POSTGRES: restore job source host not found in config file"
+                error_log "POSTGRES: restore job destination host not found in config file"
                 exit 1
             fi
 
-            info_log "POSTGRES: restore job source host: $host"
+            info_log "POSTGRES: restore job to destination host: $host"
+            load_datasources_config $config_path $host
             #
             # Required restore parameters
-            ######################
+            #############################
+            # Datasource parameters
+            postgres_datasource_host=$datasources_host
+            postgres_datasource_port=$datasources_port
+            postgres_datasource_user=$datasources_user
+            postgres_datasource_password=$datasources_password
+
+            # Jobs parameters
             postgres_restore_name=$job_name
 
             postgres_restore_source_dir=$(read_yml ".jobs[] | select(.name == \"$job_name\").source.dir" "$config_path")
@@ -32,7 +40,7 @@ load_postgres_restore_config() {
             postgres_restore_destination_dbs=$(read_yml ".jobs[] | select(.name == \"$job_name\").destination[] | select(.host == \"$host\").dbs[]" "$config_path")
             #
             # Optional restore parameters
-            ######################
+            #############################
             postgres_restore_enabled=$(read_yml ".jobs[] | select(.name == \"$job_name\").enabled" "$config_path")
             postgres_restore_compression=$(read_yml ".jobs[] | select(.name == \"$job_name\").compression" "$config_path")
 

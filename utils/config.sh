@@ -27,3 +27,19 @@ load_config() {
 
     load_postgres_config $config_path
 }
+
+
+load_datasources_config() {
+    config_path=$1
+    host=$2
+
+    if [[ -z $host ]]
+    then
+        error_log "Datasource host not specified"
+        exit 1
+    fi
+    datasources_host=$(read_yml ".datasources[] | select(.host == \"$host\").host" $config_path)
+    datasources_port=$(read_yml ".datasources[] | select(.host == \"$host\").port" $config_path)
+    datasources_user=$(read_yml ".datasources[] | select(.host == \"$host\").user" $config_path)
+    datasources_password=$(read_yml ".datasources[] | select(.host == \"$host\").password" $config_path)
+}
