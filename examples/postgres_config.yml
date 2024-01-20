@@ -18,23 +18,38 @@ datasources:
     password: postgres
 
 
-
+# Jobs configuration
 jobs:
   - name: Production Backup
+    # type can be backup or restore
     type: backup
     engine: postgres
     source:
       - host: localhost
-        dbs: []
+        # Options:
+        # dbs:[] - databases list to backup
+        # exclude_dbs:[] - databases list to exclude from backup
+        # if not configured, it will backup all databases by default
+        dbs:
+          - mydb
+          - mydb2
       - host: example.com
         exclude_dbs: []
     destination:
+      # Options:
+      # dir: directory to store backups
+      # s3_uri: s3 bucket URI to store backups. You need to configure aws cli before using this option
       dir: /var/lib/backup
       s3_uri: s3://my-bucket
+    #
+    # Optional Settings:
+    #
+    # enabled: if not configured, it will be enabled by default
     enabled: true
+    # compression: if not configured, it will be enabled by default (.tar.gz format)
     compression: true
 
-  - name: Test Remote Backup
+  - name: Test Only Remote Backup
     type: backup
     engine: postgres
     source:
@@ -42,4 +57,23 @@ jobs:
     destination:
       s3_uri: s3://my-bucket
     enabled: true
+    compression: false
+
+  - name: Pre-production Restore
+    type: restore
+    engine: postgres
+    source:
+      # Options:
+      # dir: Restore backups from local directory.
+      # s3_uri: Restore backups from S3 Bucket. You need to configure aws cli before using this option.
+      dir: /var/lib/backup
+    destination:
+      - host: localhost
+        dbs: []
+    #
+    # Optional Settings:
+    #
+    # enabled: if not configured, it will be enabled by default
+    enabled: true
+    # decompression: if not configured, it will be disabled by default (.tar.gz format)
     compression: false

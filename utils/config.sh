@@ -25,6 +25,5 @@ load_config() {
         exit 1
     fi
 
-    info_log "Jobs found in config file"
     load_postgres_config $config_path
 }
