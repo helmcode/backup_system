@@ -1,0 +1,45 @@
+---
+# Backup system configuration file
+#
+# Datasources configuration
+# engine can be postgres, ...
+datasources:
+  - host: localhost
+    port: 5432
+    user: postgres
+    password: postgres
+  - host: example.com
+    port: 5432
+    user: postgres
+    password: postgres
+  - host: test.com
+    port: 5432
+    user: postgres
+    password: postgres
+
+
+
+jobs:
+  - name: Production Backup
+    type: backup
+    engine: postgres
+    source:
+      - host: localhost
+        dbs: []
+      - host: example.com
+        exclude_dbs: []
+    destination:
+      dir: /var/lib/backup
+      s3_uri: s3://my-bucket
+    enabled: true
+    compression: true
+
+  - name: Test Remote Backup
+    type: backup
+    engine: postgres
+    source:
+      - host: test.com
+    destination:
+      s3_uri: s3://my-bucket
+    enabled: true
+    compression: false

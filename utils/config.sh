@@ -1,8 +1,4 @@
 #!/bin/bash
-read_yml() {
-    yq e "$1" "$2"
-}
-
 load_config() {
     config_path=$1
     if [[ -z $config_path ]]
@@ -29,12 +25,6 @@ load_config() {
         exit 1
     fi
 
-    postgres_datasources=$(read_yml '.datasources[] | select(.engine == "postgres")' "$config_path")
-    if [[ -z $postgres_datasources ]]
-    then
-        info_log "No postgres datasources found in config file"
-    else
-        info_log "Postgres datasources found in config file"
-        load_postgres_config $config_path
-    fi
+    info_log "Jobs found in config file"
+    load_postgres_config $config_path
 }
